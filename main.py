@@ -1,6 +1,4 @@
-import numpy as np
 from sklearn import tree
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 
