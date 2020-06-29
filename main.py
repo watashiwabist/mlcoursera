@@ -20,5 +20,4 @@ y = data.Survived
 clf = tree.DecisionTreeClassifier(random_state=241)
 clf.fit(X, y)
 importances = pd.DataFrame({'features': X.columns, 'feature_importances': clf.feature_importances_}).sort_values('feature_importances', ascending=False)
-
 print(importances)
