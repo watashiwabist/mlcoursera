@@ -1,23 +1,18 @@
-from sklearn import tree
-from sklearn.preprocessing import LabelEncoder
+import numpy as np
 import pandas as pd
+from sklearn.model_selection import KFold, cross_val_score
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import scale
 
-
-data = pd.read_csv('titanic.csv')
-data = data.drop(['PassengerId', 'Name', 'SibSp', 'Parch',
-                  'Ticket', 'Cabin', 'Embarked'], axis=1)
-label = LabelEncoder()
-dicts = {}
-label.fit(data.Sex.drop_duplicates())
-dicts['Sex'] = list(label.classes_)
-data.Sex = label.transform(data.Sex)
-
-X = data[['Pclass', 'Fare', 'Age', 'Sex']]
-X = pd.get_dummies(X)
-X = X.fillna({'Age': X.Age.mean()})
-y = data.Survived
-
-clf = tree.DecisionTreeClassifier(random_state=241)
-clf.fit(X, y)
-importances = pd.DataFrame({'features': X.columns, 'feature_importances': clf.feature_importances_}).sort_values('feature_importances', ascending=False)
-print(importances)
+df = pd.read_csv('wine.data', header=None,
+                 names=['Class', 'Alcohol', 'Malic acid', 'Ash', 'Alcalinity of ash', 'Magnesium', 'Total phenols',
+                        'Flavanoids',
+                        'Nonflavanoid phenols', 'Proanthocyanins', 'Color intensity', 'Hue',
+                        'OD280/OD315 of diluted wines', 'Proline'])
+kfold = KFold(n_splits=5, shuffle=True, random_state=42)
+X = scale(df.drop('Class', axis=1))
+y = df.Class
+for k in range(1, 51):
+    knn = KNeighborsClassifier(n_neighbors=k)
+    res = cross_val_score(knn, X, y, cv=kfold)
+    print(np.mean(res), k)
